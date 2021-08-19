@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  client:
+    build: ./client/
+    ports:
+      - '3000:3000'
+
+  server:
+    build: ./server/
+    ports:
+      - '8080:8080'
+    environment:
+      CMS_HOST: 'localhost:5432'
+  
+  strapi:
+    image: strapi/strapi
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_NAME: strapi
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: "${STRAPI_USERNAME}"
+      DATABASE_PASSWORD: "${STRAPI_PASSWORD}"
+    volumes:
+      - strapi_app:/srv/app
+    ports:
+      - '1337:1337'
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: strapi
+      POSTGRES_USER: ${STRAPI_USERNAME}
+      POSTGRES_PASSWORD: ${STRAPI_PASSWORD}
+    volumes:
+      - strapi_db:/var/lib/postgresql/data
+
+volumes:
+  strapi_app:
+  strapi_db:
