@@ -1,7 +1,8 @@
 package downloader
 
 import (
-	"github.com/anacrolix/torrent"
+	"path/filepath"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,10 +23,10 @@ func magnetDownload(c *gin.Context) {
 		})
 	}
 
-	config := torrent.NewDefaultClientConfig()
-	config.DataDir = "/data"
-
-	client, _ := torrent.NewClient(config)
+	client, err := NewTorrentClient()
+	if err != nil {
+		c.AbortWithError(500, err)
+	}
 	defer client.Close()
 
 	torrent, err := client.AddMagnet(magnetLink)
@@ -43,6 +44,40 @@ func magnetDownload(c *gin.Context) {
 	})
 }
 
-func torrentDownload(c *gin.Context) {}
+func torrentDownload(c *gin.Context) {
+	file, err := c.FormFile("torrent")
+	if err != nil {
+		c.AbortWithError(400, err)
+	}
 
-func request(c *gin.Context) {}
+	filename := filepath.Base(file.Filename)
+	client, err := NewTorrentClient()
+	if err != nil {
+		c.AbortWithError(500, err)
+	}
+	defer client.Close()
+
+	torrent, err := client.AddTorrentFromFile(filename)
+	if err != nil {
+		c.AbortWithError(500, err)
+	}
+
+	<-torrent.GotInfo()
+	torrent.DownloadAll()
+	client.WaitAll()
+
+	c.JSON(200, gin.H{
+		"name":   torrent.Info().Name,
+		"status": "download complete",
+	})
+}
+
+func request(c *gin.Context) {
+	var body RequestBody
+	c.Bind(&body)
+	items := body.Items
+
+	for _, item := range items {
+		// WIP : Write these to a store or db, perhaps redis or an sqlite db
+	}
+}
