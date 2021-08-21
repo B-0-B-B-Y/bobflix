@@ -6,7 +6,7 @@ services:
     ports:
       - '3000:3000'
     environment:
-      BACKEND_HOST: 'localhost:8080'
+      BACKEND_HOST: 'server:8080'
 
   server:
     build: ./server/
