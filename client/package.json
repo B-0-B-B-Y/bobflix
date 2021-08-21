@@ -2,6 +2,7 @@
   "name": "bobflix",
   "author": "Bob Naydenov<bob.naydenov@hotmail.com>",
   "repository": "https://github.com/B-0-B-B-Y/bobflix",
+  "license": "AGPL-3.0-only",
   "version": "0.1.0",
   "private": false,
   "scripts": {
