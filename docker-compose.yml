@@ -12,8 +12,17 @@ services:
     build: ./server/
     ports:
       - '8080:8080'
+    environment:
+      REDIS_PASSWORD: bobflix
     volumes:
       - storage:/data
+
+  redis:
+    image: redis
+    ports:
+      - '6379:6379'
+    environment: 
+      REDIS_PASSWORD: bobflix
 
 volumes:
   storage:

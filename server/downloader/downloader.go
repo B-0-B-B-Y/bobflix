@@ -1,8 +1,11 @@
 package downloader
 
 import (
+	"context"
+	"encoding/json"
 	"path/filepath"
 
+	redisClient "github.com/B-0-B-B-Y/bobflix/redis"
 	"github.com/gin-gonic/gin"
 )
 
@@ -76,8 +79,19 @@ func request(c *gin.Context) {
 	var body RequestBody
 	c.Bind(&body)
 	items := body.Items
+	redisClient := redisClient.New()
 
 	for _, item := range items {
-		// WIP : Write these to a store or db, perhaps redis or an sqlite db
+		itemJSON, err := json.Marshal(item)
+		if err != nil {
+			c.AbortWithError(500, err)
+		}
+
+		err = redisClient.Set(context.Background(), item.Title, itemJSON, 0).Err()
+		if err != nil {
+			c.AbortWithError(500, err)
+		}
 	}
+
+	c.Status(200)
 }
