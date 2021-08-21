@@ -19,10 +19,14 @@ services:
 
   redis:
     image: redis
+    command: --requirepass bobflix
     ports:
       - '6379:6379'
-    environment: 
-      REDIS_PASSWORD: bobflix
+    environment:
+      PORT: 6379
+    volumes:
+      - redis-data:/data
 
 volumes:
   storage:
+  redis-data:
