@@ -1,7 +1,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   height: 100vh;
   width: 100%;
@@ -10,23 +10,14 @@
 
 .title {
   font-family: 'Bebas Neue', cursive;
-  font-size: 15rem;
+  font-size: 10rem;
   color: #e50914;
-  // animation: title 2s linear forwards;
+  margin: 0;
+  text-decoration: underline white;
 }
 
 .image {
   width: 64px;
   height: 64px;
   filter: invert(1);
-}
-
-@keyframes title {
-  0% {
-    font-size: 15rem; 
-  }
-
-  100% {
-    font-size: 20rem;
-  }
 }
