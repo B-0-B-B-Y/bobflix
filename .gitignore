@@ -5,6 +5,9 @@
 *.so
 *.dylib
 
+# Golang server binary
+bobflix
+
 # Test binary, built with `go test -c`
 *.test
 
