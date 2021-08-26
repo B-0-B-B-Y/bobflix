@@ -1,6 +1,8 @@
 package explorer
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 // WIP
 // Search : Performs a lookup in the database using user-defined keyword
@@ -18,15 +20,8 @@ func Search(c *gin.Context) {
 }
 
 func List(c *gin.Context) {
-	var videoList ListResponse
-	var videoItem ListItem
+	extensions := []string{".mkv", ".mp4", ".avi", ".wmv", ".mov", ".webm"}
+	videoList := find("/data", extensions)
 
-	videoItem.Title = "Test title"
-	videoItem.Runtime = "1:43:57"
-	videoItem.Genre = "Test genre"
-	videoItem.Description = "Test description"
-
-	videoList.Items = append(videoList.Items, videoItem)
-
-	c.JSON(200, videoList.Items)
+	c.JSON(200, videoList)
 }

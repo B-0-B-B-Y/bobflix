@@ -1,4 +1,4 @@
-package redisClient
+package db
 
 import (
 	"os"
@@ -6,11 +6,15 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+type Database struct {
+	Client *redis.Client
+}
+
 // New : Create a new redis client
-func New() *redis.Client {
-	return redis.NewClient(&redis.Options{
+func New() *Database {
+	return &Database{redis.NewClient(&redis.Options{
 		Addr:     "redis:6379",
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0,
-	})
+	})}
 }

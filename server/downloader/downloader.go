@@ -1,19 +1,12 @@
 package downloader
 
 import (
-	"context"
-	"encoding/json"
 	"path/filepath"
 
-	redisClient "github.com/B-0-B-B-Y/bobflix/redis"
+	database "github.com/B-0-B-B-Y/bobflix/db"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
-
-func DownloaderRoutes(router *gin.RouterGroup) {
-	router.POST("/magnet", magnetDownload)
-	router.POST("/torrent", torrentDownload)
-	router.POST("/request", request)
-}
 
 func magnetDownload(c *gin.Context) {
 	var body MagnetDownloadBody
@@ -41,6 +34,14 @@ func magnetDownload(c *gin.Context) {
 	torrent.DownloadAll()
 	client.WaitAll()
 
+	database.New().AddMovie(&database.Movie{
+		ID:          uuid.NewString(),
+		Title:       torrent.Info().Name,
+		Runtime:     body.Runtime,
+		Genre:       body.Genre,
+		Description: body.Description,
+	})
+
 	c.JSON(200, gin.H{
 		"name":   torrent.Info().Name,
 		"status": "download complete",
@@ -48,6 +49,8 @@ func magnetDownload(c *gin.Context) {
 }
 
 func torrentDownload(c *gin.Context) {
+	var body TorrentDownloadBody
+	c.Bind(&body)
 	file, err := c.FormFile("torrent")
 	if err != nil {
 		c.AbortWithError(400, err)
@@ -69,6 +72,14 @@ func torrentDownload(c *gin.Context) {
 	torrent.DownloadAll()
 	client.WaitAll()
 
+	database.New().AddMovie(&database.Movie{
+		ID:          uuid.NewString(),
+		Title:       torrent.Info().Name,
+		Runtime:     body.Runtime,
+		Genre:       body.Genre,
+		Description: body.Description,
+	})
+
 	c.JSON(200, gin.H{
 		"name":   torrent.Info().Name,
 		"status": "download complete",
@@ -78,19 +89,10 @@ func torrentDownload(c *gin.Context) {
 func request(c *gin.Context) {
 	var body RequestBody
 	c.Bind(&body)
-	items := body.Items
-	redisClient := redisClient.New()
 
-	for _, item := range items {
-		itemJSON, err := json.Marshal(item)
-		if err != nil {
-			c.AbortWithError(500, err)
-		}
-
-		err = redisClient.Set(context.Background(), item.Title, itemJSON, 0).Err()
-		if err != nil {
-			c.AbortWithError(500, err)
-		}
+	err := database.New().AddMovieRequest(&body.RequestedMovie)
+	if err != nil {
+		c.AbortWithError(500, err)
 	}
 
 	c.Status(200)

@@ -1,24 +1,20 @@
 package downloader
 
-import "github.com/anacrolix/torrent"
+import "github.com/B-0-B-B-Y/bobflix/db"
 
 type MagnetDownloadBody struct {
-	MagnetLink string `json:"magnetLink" binding:"required"`
+	MagnetLink  string `json:"magnetLink" binding:"required"`
+	Runtime     string `json:"runtime" binding:"required"`
+	Genre       string `json:"genre" binding:"required"`
+	Description string `json:"description" binding:"required"`
+}
+
+type TorrentDownloadBody struct {
+	Runtime     string `json:"runtime" binding:"required"`
+	Genre       string `json:"genre" binding:"required"`
+	Description string `json:"description" binding:"required"`
 }
 
 type RequestBody struct {
-	Items []RequestItem `json:"items" binding:"required"`
-}
-
-type RequestItem struct {
-	Title       string `json:"title" binding:"required"`
-	Category    string `json:"category" binding:"required"`
-	Description string `json:"description"`
-}
-
-func NewTorrentClient() (*torrent.Client, error) {
-	config := torrent.NewDefaultClientConfig()
-	config.DataDir = "/data"
-
-	return torrent.NewClient(config)
+	RequestedMovie db.MovieRequest `json:"requestedMovie" binding:"required"`
 }
