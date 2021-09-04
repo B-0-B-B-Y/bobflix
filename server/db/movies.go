@@ -92,4 +92,5 @@ func (db *Database) FindMovieByTitle(title string) error {
 		}
 	}
 
+  return nil
 }

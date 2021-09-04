@@ -9,9 +9,10 @@ import (
 func Search(c *gin.Context) {
 	query := c.Param("query")
 	if query == "" {
-		c.JSON(400, gin.H{
+		c.AbortWithStatusJSON(400, gin.H{
 			"Error": "You need to specify a search keyword",
 		})
+		return
 	}
 
 	c.JSON(200, gin.H{
@@ -22,6 +23,13 @@ func Search(c *gin.Context) {
 func List(c *gin.Context) {
 	extensions := []string{".mkv", ".mp4", ".avi", ".wmv", ".mov", ".webm"}
 	videoList := find("/data", extensions)
+
+	if len(videoList) == 0 {
+		c.AbortWithStatusJSON(404, gin.H{
+			"Error": "No movies were found",
+		})
+		return
+	}
 
 	c.JSON(200, videoList)
 }
