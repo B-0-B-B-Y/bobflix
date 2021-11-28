@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const VIDEO_DIR = "/home/zer0/Documents/github/bobflix/server/data"
+
 // WIP
 // Search : Performs a lookup in the database using user-defined keyword
 func Search(c *gin.Context) {
@@ -22,7 +24,7 @@ func Search(c *gin.Context) {
 
 func List(c *gin.Context) {
 	extensions := []string{".mkv", ".mp4", ".avi", ".wmv", ".mov", ".webm"}
-	videoList := find("/data", extensions)
+	videoList := find(VIDEO_DIR, extensions)
 
 	if len(videoList) == 0 {
 		c.AbortWithStatusJSON(404, gin.H{

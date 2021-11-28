@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+.player {
+  width: 100%;
+}

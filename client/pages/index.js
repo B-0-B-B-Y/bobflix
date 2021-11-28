@@ -1,34 +1,43 @@
 import { Loader } from '../components/Loader'
-import { useState } from 'react'
 import styles from '../styles/Home.module.scss'
 import { FileBrowser } from '../components/FileBrowser'
 
-export const Home = ({ videoList }) => {
-  const [content, setContent] = useState(videoList)
+export const Home = ({ videoList, error }) => {
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Bobflix</h1>
-      <Loader show={content === null || content === undefined}/>
-      <FileBrowser fileList={content} />
+      <Loader show={videoList === null && error === null}/>
+      <FileBrowser fileList={videoList} error={error} />
     </div>
   )
 }
 
 export const getServerSideProps = async (context) => {
-  const response = await fetch(`${process.env.BACKEND_HOST || 'http://localhost:8080'}/api/v1/explore/list`, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
+  let props = {
+    videoList: null,
+    error: null
+  }
+
+  try {
+    const response = await fetch(`${process.env.BACKEND_HOST || 'http://localhost:8080'}/api/v1/explore/list`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    if (!response.ok) {
+      props.error = await response.json()
+    } else {
+      props.videoList = await response.json()
     }
-  })
-  const videoList = await response.json()
+  } catch (err) {
+    props.error = err.error
+  }
 
   return {
-    props: {
-      videoList
-    }
+    props
   }
 }
 

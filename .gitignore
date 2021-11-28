@@ -50,3 +50,5 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+server/data/
