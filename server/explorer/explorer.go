@@ -1,6 +1,10 @@
 package explorer
 
 import (
+	"encoding/json"
+	"reflect"
+
+	"github.com/B-0-B-B-Y/bobflix/db"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,15 +27,41 @@ func Search(c *gin.Context) {
 }
 
 func List(c *gin.Context) {
-	extensions := []string{".mkv", ".mp4", ".avi", ".wmv", ".mov", ".webm"}
-	videoList := find(VIDEO_DIR, extensions)
+	client := db.New().Client
 
-	if len(videoList) == 0 {
-		c.AbortWithStatusJSON(404, gin.H{
-			"Error": "No movies were found",
+	keys, err := client.Do(client.Context(), "keys", "*").Result()
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"Error": "Could not retrieve information from redis",
 		})
 		return
 	}
 
-	c.JSON(200, videoList)
+	var movieList []db.Movie
+	keyArray := reflect.ValueOf(keys)
+
+	for i := 0; i < keyArray.Len(); i++ {
+		movie, err := client.Get(client.Context(), keyArray.Index(i).Elem().String()).Result()
+		if err != nil {
+			c.AbortWithStatusJSON(400, gin.H{
+				"Error": "Could not retrieve data for all movies",
+			})
+			return
+		}
+
+		var jsonMovie db.Movie
+		err = json.Unmarshal([]byte(movie), &jsonMovie)
+		if err != nil {
+			c.AbortWithStatusJSON(400, gin.H{
+				"Error": "Could not serialise data from redis to JSON",
+			})
+			return
+		}
+
+		movieList = append(movieList, jsonMovie)
+	}
+
+	c.JSON(200, gin.H{
+		"movies": movieList,
+	})
 }

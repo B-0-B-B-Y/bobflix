@@ -8,7 +8,7 @@ export const Home = ({ videoList, error }) => {
     <div className={styles.container}>
       <h1 className={styles.title}>Bobflix</h1>
       <Loader show={videoList === null && error === null}/>
-      <FileBrowser fileList={videoList} error={error} />
+      <FileBrowser videoList={videoList} error={error} />
     </div>
   )
 }
@@ -30,7 +30,7 @@ export const getServerSideProps = async (context) => {
     if (!response.ok) {
       props.error = await response.json()
     } else {
-      props.videoList = await response.json()
+      props.videoList = await response.json().then((data) => data?.movies)
     }
   } catch (err) {
     props.error = err.error

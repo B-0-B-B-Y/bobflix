@@ -15,6 +15,7 @@ type Movie struct {
 	Runtime     string `json:"runtime"`
 	Genre       string `json:"genre"`
 	Description string `json:"description"`
+	Directory   string `json:"directory"`
 }
 
 type MovieRequest struct {
@@ -92,5 +93,5 @@ func (db *Database) FindMovieByTitle(title string) error {
 		}
 	}
 
-  return nil
+	return nil
 }

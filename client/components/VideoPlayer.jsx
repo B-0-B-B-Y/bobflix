@@ -1,21 +1,21 @@
 import styles from '../styles/VideoPlayer.module.scss'
 import { useEffect, useRef } from "react"
 import HLS from 'hls.js'
+import PropTypes from 'prop-types'
+import { VideoOverlay } from './VideoOverlay'
 
-export const VideoPlayer = ({}) => {
+export const VideoPlayer = ({ title, runtime, genre, description, directory, setShowPlayer }) => {
   const videoPlayerRef = useRef()
   
   useEffect(() => {
     const hls = new HLS({
       enableWorker: true,
       autoStartLoad: true,
-      debug: true
     })
 
     hls.attachMedia(videoPlayerRef.current)
     hls.on(HLS.Events.MEDIA_ATTACHED, () => {
-      // This needs refactoring to be dynamic, this will happen once I refactor the homepage UI to implement movie cards
-      hls.loadSource(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/api/v1/explore/stream/Aliens/playlist.m3u8`)
+      hls.loadSource(`${process.env.NEXT_PUBLIC_BACKEND_HOST}/api/v1/explore/stream/${directory}`)
     })
 
     return () => {
@@ -23,11 +23,21 @@ export const VideoPlayer = ({}) => {
         hls.destroy()
       }
     }
-  }, [videoPlayerRef])
+  }, [videoPlayerRef, directory])
 
   return (
     <div className={styles.container}>
-      <video className={styles.player} ref={videoPlayerRef} controls={true} />
+      <VideoOverlay setShowPlayer={setShowPlayer} videoRef={videoPlayerRef} />
+      <video className={styles.player} ref={videoPlayerRef} controls={true} autoPlay={true} />
     </div>
   )
+}
+
+VideoPlayer.propTypes = {
+  title: PropTypes.string.isRequired,
+  runtime: PropTypes.string.isRequired,
+  genre: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  directory: PropTypes.string.isRequired,
+  setShowPlayer: PropTypes.func.isRequired,
 }

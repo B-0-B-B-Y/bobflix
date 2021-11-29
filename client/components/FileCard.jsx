@@ -10,6 +10,8 @@ import PropTypes from 'prop-types'
 const useStyles = makeStyles({
   root: {
     maxWidth: 275,
+    flex: '1 1 0',
+    margin: 16,
   },
   bullet: {
     display: 'inline-block',
@@ -26,10 +28,10 @@ const useStyles = makeStyles({
     display: 'flex',
     flexFlow: 'row nowrap',
     justifyContent: 'center',
-  }
-})
+  },
+}, { name: "Mui_FileCard" })
 
-export const FileCard = ({ title, runtime, genre, description }) => {
+export const FileCard = ({ title, runtime, genre, description, directory, setMovieToPlay }) => {
   const classes = useStyles();
 
   return (
@@ -49,7 +51,7 @@ export const FileCard = ({ title, runtime, genre, description }) => {
         </Typography>
       </CardContent>
       <CardActions className={classes.center}>
-        <Button variant='contained' size='medium' color='primary' endIcon={<PlayCircleFilledIcon />}>Watch Now</Button>
+        <Button className={classes.playButton} onClick={() => setMovieToPlay({ title, runtime, genre, description, directory })} variant='contained' size='medium' color='primary' endIcon={<PlayCircleFilledIcon />}>Watch Now</Button>
       </CardActions>
     </Card>
   )
@@ -60,4 +62,6 @@ FileCard.propTypes = {
   runtime: PropTypes.string.isRequired,
   genre: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
+  directory: PropTypes.string.isRequired,
+  setMovieToPlay: PropTypes.func.isRequired
 }
