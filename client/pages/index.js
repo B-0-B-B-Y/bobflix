@@ -2,13 +2,12 @@ import { Loader } from '../components/Loader'
 import styles from '../styles/Home.module.scss'
 import { FileBrowser } from '../components/FileBrowser'
 
-export const Home = ({ videoList, error }) => {
-
+export const Home = ({ videoList, isEmpty, error }) => {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Bobflix</h1>
       <Loader show={videoList === null && error === null}/>
-      <FileBrowser videoList={videoList} error={error} />
+      <FileBrowser videoList={videoList} isEmpty={isEmpty} error={error} />
     </div>
   )
 }
@@ -16,6 +15,7 @@ export const Home = ({ videoList, error }) => {
 export const getServerSideProps = async (context) => {
   let props = {
     videoList: null,
+    isEmpty: true,
     error: null
   }
 
@@ -31,6 +31,7 @@ export const getServerSideProps = async (context) => {
       props.error = await response.json()
     } else {
       props.videoList = await response.json().then((data) => data?.movies)
+      props.isEmpty = false
     }
   } catch (err) {
     props.error = err.error
